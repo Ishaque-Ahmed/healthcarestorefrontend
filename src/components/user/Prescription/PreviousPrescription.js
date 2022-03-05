@@ -17,7 +17,7 @@ const PreviousPrescription = () => {
     //console.log(previous);
     return (
         <div className="container">
-            <h4 className="mb-3 text-muted">Previous Orders:</h4>
+            <h4 className="mb-3 text-muted">Your Orders:</h4>
             {previous.map((item, i) =>
                 <SinglePreviousOrders cur={item} serial={i + 1} key={item._id} />
             )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import Spinner from '../Spinner/Spinner';
 import Layout from '../Layout';
 import { API } from '../../utils/config';
 import { getProductDetails } from '../../api/apiProduct'
@@ -15,17 +16,22 @@ const ProductDetails = props => {
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
     const [deleteMsg, setDeleteMsg] = useState(false);
+    const [loading, setLoading] = useState(false);
 
+    const Swal = require('sweetalert2');
 
 
     useEffect(() => {
+        setLoading(true);
         const id = props.match.params.id;
         getProductDetails(id)
             .then(response => {
                 setProduct(response.data);
+                setLoading(false);
             })
             .catch(err => {
-                setError("Failed to load product")
+                setError("Failed to load product");
+                setLoading(false);
             })
     }, [])
     const handleAddToCart = product => () => {
@@ -39,8 +45,18 @@ const ProductDetails = props => {
                 price: product.price
             }
             addToCart(user.token, cartItem)
-                .then(response => setSuccess(true))
+                .then(response => {
+                    setSuccess(true);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added To Cart',
+                    })
+                })
                 .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: err.response.data,
+                    })
                     if (err.response) setError(err.response.data);
                     else setError("Adding To cart Failed!");
                 })
@@ -93,6 +109,7 @@ const ProductDetails = props => {
                 </nav>
                 <div className='container'>
                     <div>
+                        {loading ? <Spinner /> : ""}
                         {showSuccess(success, 'Item Added to Cart!')}
                         {showError(error, error)}
 

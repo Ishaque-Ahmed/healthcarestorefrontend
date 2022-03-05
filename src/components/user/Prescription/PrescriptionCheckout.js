@@ -64,7 +64,7 @@ const PrescriptionCheckout = () => {
                     </div>
                     <div className="col-md-4">
                         <br />
-                        <p><Link className="btn btn-warning btn-md" to="/user/dashboard">Confirm Order</Link></p>
+                        <p><Link className="btn btn-warning btn-md" to="/user/prescription" >Confirm Order</Link></p>
                     </div>
                 </div>
             </div>

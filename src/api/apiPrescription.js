@@ -33,6 +33,7 @@ export const updatePrescription = (token, prescriptionId, data) => {
         }
     })
 }
+
 export const getAdminApprovedPrescriptions = (token, userId) => {
     return axios.get(`${API}/prescription/user/current`, {
         headers: {

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Layout from "../Layout";
 import Card from "./Card";
-import Banner from "./banner/Banner";
+import Spinner from "../Spinner/Spinner";
 import { showError, showSuccess } from "../../utils/messages";
 import { getCategories, getProducts, getFilteredProducts } from '../../api/apiProduct';
 import CheckBox from "./Checkbox";
 import RadioBox from "./RadioBox";
+import Footer from '../healthcare/footer/Footer'
 import { prices } from '../../utils/prices';
 import { isAuthenticated, userInfo } from '../../utils/auth';
 import { addToCart } from '../../api/apiOrder';
@@ -18,6 +19,7 @@ const Home = () => {
     const [skip, setSkip] = useState(0);
     const [order, setOrder] = useState('desc');
     const [sortBy, setSortBy] = useState('createdAt');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
     const [filters, setFilters] = useState({
@@ -25,20 +27,30 @@ const Home = () => {
         price: []
     });
     const [searchKey, setSearchKey] = useState('');
+    const Swal = require('sweetalert2');
 
     useEffect(() => {
+        setLoading(true);
 
         //console.log(sortBy, order, limit, skip);
         getProducts(sortBy, order, limit, skip)
             .then(response => {
                 setProducts(response.data);
+                setLoading(false);
             })
             .catch(err => {
                 setError("Failed To load Products");
+                setLoading(false);
             });
         getCategories()
-            .then(response => setCategories(response.data))
-            .catch(err => setError("Failed TO load Categories"))
+            .then(response => {
+                setCategories(response.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                setError("Failed TO load Categories");
+                setLoading(false);
+            })
     }, [limit, skip]);
 
 
@@ -56,15 +68,24 @@ const Home = () => {
             addToCart(user.token, cartItem)
                 .then(response => {
                     setSuccess(true);
-                    alert("Added To Cart")
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added To Cart',
+                    })
                 })
                 .catch(err => {
-                    alert(err.response.data)
+                    Swal.fire({
+                        icon: 'error',
+                        title: err.response.data,
+                    })
                     if (err.response) setError(err.response.data);
                     else setError("Adding To cart Failed!");
                 })
         } else {
-            alert("Please Log in First!")
+            Swal.fire({
+                icon: 'error',
+                title: 'Please Login First!',
+            })
             setSuccess(false);
             setError("Please Log In first");
         }
@@ -129,9 +150,9 @@ const Home = () => {
 
     return (
         <Layout title="Store" className="" >
-            {/* <Banner /> */}
             <div className="container mt-4"  >
                 {showFilters()}
+                {loading ? <Spinner /> : ""}
                 <div style={{
                     width: "100%"
                 }}>
@@ -153,6 +174,7 @@ const Home = () => {
                         onClick={() => { setSkip(skip + 4) }}>see more</button>
                 </div>
             </div>
+            <Footer />
         </Layout>
     )
 }

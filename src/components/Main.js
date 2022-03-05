@@ -18,6 +18,7 @@ import PrescriptionCheckout from './user/Prescription/PrescriptionCheckout';
 import Payment from './order/Payment';
 import UpdateProduct from './admin/UpdateProduct';
 import Healthcare from './healthcare/Healthcare';
+import AdminOrders from './admin/adminOrders/AdminOrders';
 
 const Main = () => {
     return (
@@ -54,6 +55,9 @@ const Main = () => {
                 </PrivateRoute>
                 <AdminRoute path="/admin/dashboard">
                     <AdminDashboard />
+                </AdminRoute>
+                <AdminRoute path="/admin/orders">
+                    <AdminOrders />
                 </AdminRoute>
                 <AdminRoute path="/admin/product/update/:id">
                     <UpdateProduct />

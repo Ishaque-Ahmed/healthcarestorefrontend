@@ -20,6 +20,7 @@ const Prescription = () => {
         formData: new FormData(),
     });
     const [confirmed, setConfirmed] = useState([]);
+    const Swal = require('sweetalert2');
 
     const history = useHistory();
     const {
@@ -118,34 +119,108 @@ const Prescription = () => {
         }
 
         const changeToUserApproved = () => {
-            if (!window.confirm("Confirm?")) return
-            const formData = new FormData();
-            formData.set('curStatus', 'UserConfirmed');
-            updatePrescription(userInfo().token, prescriptionId, formData)
-                .then(response => {
-                    setDone(true);
-                    alert('Confirmed')
-                    window.location.reload();
-                })
-                .catch(err => {
-                    setDone(false);
-                    alert('can not confirm!');
-                });
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success ml-3',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Confirm!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.set('curStatus', 'UserConfirmed');
+                    updatePrescription(userInfo().token, prescriptionId, formData)
+                        .then(response => {
+                            setDone(true);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Confirmed!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            window.location.reload();
+                        })
+                        .catch(err => {
+                            setDone(false);
+                            alert('can not confirm!');
+                        });
+                    swalWithBootstrapButtons.fire(
+                        'Confirmed!',
+                        'Your order has been confirmed',
+                        'success'
+                    )
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Cancelled',
+                        'Please confirm to get your medicines delivered!',
+                        'error'
+                    )
+                }
+            })
         }
+
+
+
         const changeToUserCancelled = () => {
-            if (!window.confirm("Cancel?")) return
-            const formData = new FormData();
-            formData.set('curStatus', 'UserCancelled');
-            updatePrescription(userInfo().token, prescriptionId, formData)
-                .then(response => {
-                    setDone(true);
-                    alert('Cancelled!')
-                    window.location.reload();
-                })
-                .catch(err => {
-                    setDone(false);
-                    alert('can not confirm!');
-                })
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success ml-3',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Confirm!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.set('curStatus', 'UserCancelled');
+                    updatePrescription(userInfo().token, prescriptionId, formData)
+                        .then(response => {
+                            setDone(true);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Cancelled!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            window.location.reload();
+                        })
+                        .catch(err => {
+                            setDone(false);
+                            alert('can not confirm!');
+                        })
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Cancelled',
+                        'Please confirm to get your medicines delivered!',
+                        'error'
+                    )
+                }
+            })
         }
 
         return (

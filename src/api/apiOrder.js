@@ -65,3 +65,10 @@ export const getPurchaseHistory = token => {
         }
     })
 }
+export const getAllOrders = token => {
+    return axios.get(`${API}/profile/admin/orders`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}

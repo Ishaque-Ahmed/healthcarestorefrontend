@@ -46,6 +46,12 @@ const Healthcare = ({ history }) => {
                                         style={isActive(history, `/user/prescription`)} to={`/user/prescription`}>Upload Prescription</Link>
                                 </li>
                             </>)}
+                            {userInfo().role === "admin" && (<>
+                                <li className="nav-item">
+                                    <Link className="nav-link"
+                                        style={isActive(history, `/admin/orders`)} to={`/admin/orders`}>Orders</Link>
+                                </li>
+                            </>)}
                             <li className="nav-item">
                                 <Link className="nav-link"
                                     style={isActive(history, `/${userInfo().role}/dashboard`)} to={`/${userInfo().role}/dashboard`}>Dashboard</Link>
@@ -77,18 +83,18 @@ const Healthcare = ({ history }) => {
 
         <div>
 
-            <div className="banner mb-5 banner-overlay">
+            <div className="banner  banner-overlay">
                 <div className='menu'> <Menu /> </div>
 
                 <div className="banner-content">
                     <h3>Welcome To</h3>
                     <h2>Online Healthcare Store</h2>
-                    <p>we are ready to serve  in your doorstep</p>
+                    <p>we are ready to serve in your doorstep</p>
                     <button onClick={viewShop} className="btn btn-outline-light">Visit Store</button>
                 </div>
             </div>
-            <About />
-            <Team />
+            <About /> <hr />
+            <Team /><hr />
             <Footer />
         </div>
     )

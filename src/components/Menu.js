@@ -41,14 +41,23 @@ const Menu = ({ history }) => {
                                     style={isActive(history, `/user/prescription`)} to={`/user/prescription`}>Upload Prescription</Link>
                             </li>
                         </>)}
+                        {userInfo().role === "admin" && (<>
+                            <li className="nav-item">
+                                <Link className="nav-link"
+                                    style={isActive(history, `/admin/orders`)} to={`/admin/orders`}>Orders</Link>
+                            </li>
+                        </>)}
                         <li className="nav-item">
                             <Link className="nav-link"
                                 style={isActive(history, `/${userInfo().role}/dashboard`)} to={`/${userInfo().role}/dashboard`}>Dashboard</Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link"
-                                style={isActive(history, `/cart`)} to={`/cart`}>Cart</Link>
-                        </li>
+                        {userInfo().role === "user" && (<>
+                            <li className="nav-item">
+                                <Link className="nav-link"
+                                    style={isActive(history, `/cart`)} to={`/cart`}>Cart</Link>
+                            </li>
+                        </>)}
+
                         <li className="nav-item">
                             <span className="nav-link" style={{ cursor: "pointer", color: "grey" }} onClick={() => {
                                 signOut(() => {

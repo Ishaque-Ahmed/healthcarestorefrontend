@@ -4,24 +4,32 @@ import { Link } from 'react-router-dom';
 import { getCartItems, updateCartItems, deleteCartItem } from '../../api/apiOrder';
 import { userInfo } from '../../utils/auth';
 import CartItem from './CartItem';
+import Spinner from '../Spinner/Spinner';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const Swal = require('sweetalert2');
 
     const loadCart = () => {
+        setLoading(true);
         getCartItems(userInfo().token)
             .then(response => {
                 setCartItems(response.data);
                 setSuccess(true);
+                setLoading(false);
             })
             .catch(err => {
                 if (err.response) {
                     setError(err.response.data)
                     setSuccess(false);
+                    setLoading(false);
                 } else {
                     setError("Cart Not Found");
+                    setLoading(false);
                     setSuccess(false);
                 }
             })
@@ -78,18 +86,52 @@ const Cart = () => {
     }
 
     const removeItem = item => () => {
-        if (!window.confirm("Delete Item?")) return
-        deleteCartItem(userInfo().token, item)
-            .then(response => { loadCart() })
-            .catch(err => {
-                if (err.response) {
-                    setError(err.response.data)
-                    setSuccess(false);
-                } else {
-                    setError("Could Not Remove!");
-                    setSuccess(false);
-                }
-            })
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success ml-3',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteCartItem(userInfo().token, item)
+                    .then(response => { loadCart() })
+                    .catch(err => {
+                        if (err.response) {
+                            setError(err.response.data)
+                            setSuccess(false);
+                        } else {
+                            setError("Could Not Remove!");
+                            setSuccess(false);
+                        }
+                    })
+                swalWithBootstrapButtons.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                )
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Your cart item is safe :)',
+                    'error'
+                )
+            }
+        })
+
     }
 
     return (
@@ -100,7 +142,7 @@ const Cart = () => {
                     <li className="breadcrumb-item active" aria-current="page">Cart</li>
                 </ol>
             </nav>
-            <div className="container my-5">
+            {loading ? <Spinner /> : <div className="container my-5">
                 <table className="table table-hover">
                     <thead>
                         <tr>
@@ -129,13 +171,14 @@ const Cart = () => {
                         <tr>
                             <th scope="row" />
                             <td colSpan={5} className="text-right">
-                                <Link to="/"><button className="btn btn-warning mr-4">Continue Shoping</button></Link>
+                                <Link to="/store"><button className="btn btn-warning mr-4">Continue Shoping</button></Link>
                                 <Link to="/shipping" className="btn btn-success mr-4">Proceed To Checkout</Link>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div>}
+
         </Layout>
     )
 }

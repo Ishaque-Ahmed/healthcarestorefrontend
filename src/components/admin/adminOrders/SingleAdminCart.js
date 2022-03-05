@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
-import { API } from "../../utils/config";
-import { getProductDetails } from "../../api/apiProduct";
-const SingleCart = props => {
+import { API } from '../../../utils/config';
+import { getProductDetails } from "../../../api/apiProduct";
+const SingleAdminCart = props => {
     //console.log(props.curCart);
     const [curProduct, setCurProduct] = useState({});
     const [errors, setError] = useState("");
-
-    const getCurProducts = () => {
+    useEffect(() => {
         getProductDetails(props.curCart.product)
             .then(response => setCurProduct(response.data))
             .catch(err => setError(""));
-    }
-    useEffect(() => {
-        getCurProducts();
     }, [])
 
 
@@ -31,4 +27,4 @@ const SingleCart = props => {
     )
 }
 
-export default SingleCart;
+export default SingleAdminCart;
